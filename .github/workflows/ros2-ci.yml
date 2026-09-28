@@ -1,0 +1,33 @@
+name: ROS2 CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build_and_test:
+    runs-on: ubuntu-22.04
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up ROS2
+        uses: ros-tooling/setup-ros@v0.7
+        with:
+          use-ros2-testing: true
+          required-ros-distributions: humble
+
+      - name: Build
+        run: |
+          source /opt/ros/humble/setup.bash
+          colcon build
+
+      - name: Test
+        run: |
+          source /opt/ros/humble/setup.bash
+          source install/setup.bash
+          colcon test
+          colcon test-result --verbose
